@@ -1,0 +1,12 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h2>Products</h2>
+<table class="table">
+    <thead><tr><th>Name</th><th>Stock</th></tr></thead>
+    <tbody>
+        {% for product in products %}
+        <tr><td>{{ product.name }}</td><td>{{ product.stock_quantity }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

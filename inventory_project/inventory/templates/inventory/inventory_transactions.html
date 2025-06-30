@@ -1,0 +1,12 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h2>Inventory Transactions</h2>
+<table class="table">
+    <thead><tr><th>Product</th><th>Quantity</th><th>Type</th><th>Date</th></tr></thead>
+    <tbody>
+        {% for t in transactions %}
+        <tr><td>{{ t.product.name }}</td><td>{{ t.quantity }}</td><td>{{ t.transaction_type }}</td><td>{{ t.created_at }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

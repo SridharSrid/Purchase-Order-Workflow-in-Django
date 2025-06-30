@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Add Purchase Order</h2>
+
+<form method="post" action="{% url 'add_purchase_order' %}">
+  {% csrf_token %}
+
+  <label for="supplier">Supplier:</label>
+  <select name="supplier_id" id="supplier" required>
+    {% for supplier in suppliers %}
+      <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+    {% endfor %}
+  </select>
+
+  <hr>
+
+  <div id="product-container">
+    <div class="product-entry">
+      <label>Product:</label>
+      <select name="product_id[]" required>
+        {% for product in products %}
+          <option value="{{ product.id }}">{{ product.name }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Quantity:</label>
+      <input type="number" name="quantity[]" min="1" required>
+
+      <button type="button" onclick="removeProduct(this)">Remove</button>
+    </div>
+  </div>
+
+  <button type="button" onclick="addProduct()">+ Add Another Product</button>
+  <br><br>
+
+  <button type="submit">Submit Purchase Order</button>
+</form>
+
+<script>
+  function addProduct() {
+    const container = document.getElementById('product-container');
+    const entry = container.firstElementChild.cloneNode(true);
+    container.appendChild(entry);
+  }
+
+  function removeProduct(button) {
+    const entry = button.parentNode;
+    if (document.getElementById('product-container').childElementCount > 1) {
+      entry.remove();
+    }
+  }
+</script>
+{% endblock %}

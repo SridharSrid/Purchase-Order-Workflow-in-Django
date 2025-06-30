@@ -1,8 +1,7 @@
 from django.db import models
-
-# Create your models here.
 from django.contrib.auth.models import User
 
+# 1. Supplier
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
     contact_email = models.EmailField()
@@ -11,6 +10,7 @@ class Supplier(models.Model):
     def __str__(self):
         return self.name
 
+# 2. Product
 class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -20,6 +20,7 @@ class Product(models.Model):
     def reorder_needed(self):
         return self.stock_quantity < self.reorder_threshold
 
+# 3. Purchase Order
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -32,12 +33,21 @@ class PurchaseOrder(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"PO #{self.id}"
+
+# 4. Purchase Order Items
 class PurchaseOrderItem(models.Model):
     purchase_order = models.ForeignKey(PurchaseOrder, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     ordered_quantity = models.IntegerField()
     received_quantity = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.product.name} in PO #{self.purchase_order.id}"
+    
+    
+# 5. Inventory Transactions
 class InventoryTransaction(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_changed = models.IntegerField()
