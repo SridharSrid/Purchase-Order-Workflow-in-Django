@@ -2,15 +2,17 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Suppliers</h2>
+    <h2 class="mb-4">Suppliers 
 
+    <button class="btn btn-success"><a href="{% url 'add-supplier' %}"><i class="bi bi-plus-circle"></i></a></button>
+
+    </h2>
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Add</th>
             </tr>
         </thead>
         <tbody>
@@ -18,11 +20,7 @@
             <tr>
                 <td>{{ s.name }}</td>
                 <td>{{ s.contact_email }}</td>
-                <td>{{ s.phone_number }}</td>
-                <td class="btn btn-success"><a href="{% url 'add-supplier' %}"><i class="bi bi-plus-circle"></i></a></td>
-                
-        </a>
-
+                <td>{{ s.phone_number }}</td>            
             </tr>
             {% empty %}
             <tr>

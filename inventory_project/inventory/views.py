@@ -117,7 +117,7 @@
 
 from django.shortcuts import get_object_or_404
 from .serializers import PurchaseOrderSerializer
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User, Permission
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -128,6 +128,66 @@ from django.shortcuts import render, redirect
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
+
+
+# @login_required
+# def dashboard(request):
+#     return render(request, 'inventory/dashboard.html')
+
+@login_required
+def dashboard(request):
+    is_manager = request.user.groups.filter(name="Manager").exists()
+    return render(request, 'inventory/dashboard.html', {'is_manager': is_manager})
+# Only superusers can add groups
+@user_passes_test(lambda u: u.is_superuser)
+def add_group(request):
+    if request.method == "POST":
+        group_name = request.POST.get("group_name")
+        if group_name:
+            Group.objects.get_or_create(name=group_name)
+    return redirect('dashboard')
+
+@user_passes_test(lambda u: u.is_superuser)
+def assign_user_group(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        group_name = request.POST.get("group_name")
+
+        try:
+            user = User.objects.get(username=username)
+            group = Group.objects.get(name=group_name)
+            user.groups.add(group)
+        except User.DoesNotExist:
+            pass
+        except Group.DoesNotExist:
+            pass
+    return redirect('dashboard')
+@user_passes_test(lambda u: u.is_superuser)
+def add_group(request):
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name')
+        permission_ids = request.POST.getlist('permissions')  # multiple selected
+
+        if group_name:
+            group, created = Group.objects.get_or_create(name=group_name)
+            if permission_ids:
+                perms = Permission.objects.filter(id__in=permission_ids)
+                group.permissions.set(perms)
+            group.save()
+
+        return redirect('dashboard')
+    
+    # For GET: display available permissions
+    permissions = Permission.objects.all().order_by('content_type__app_label', 'codename')
+    return render(request, 'inventory/add_group_form.html', {'permissions': permissions})
+
+
+
+
+
+
 
 def list_purchase_orders(request):
     purchase_orders = PurchaseOrder.objects.select_related('supplier', 'product').all()
@@ -292,3 +352,15 @@ def delete_po(request, pk):
         return Response({"error": "Only Pending orders can be deleted."}, status=400)
     po.delete()
     return Response({"message": f"Purchase Order {pk} deleted."}, status=200)
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_purchase_order(request):
+    serializer = PurchaseOrderSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
