@@ -100,9 +100,11 @@ DATABASES = {
         'PORT': '5432',
     }   
 }
-LOGIN_REDIRECT_URL = '/'  # URL name, not the path
-# LOGIN_REDIRECT_URL = 'suppliers'  # After login, where to go
-# LOGOUT_REDIRECT_URL = 'login'
+
+# LOGIN_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = '/manager-dashboard/' 
+LOGIN_URL = '/login/'
+LOGIN_URL = '/login.html'
 
 
 # Password validation

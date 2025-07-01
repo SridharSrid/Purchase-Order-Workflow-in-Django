@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manager Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light py-4">
+<div class="container">
+    <h2 class="mb-4 text-center">Pending Purchase Orders for Approval</h2>
+
+    <table class="table table-bordered table-hover bg-white shadow-sm">
+        <thead class="table-secondary">
+            <tr>
+                <th>ID</th>
+                <th>Supplier</th>
+                <th>Created By</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for po in pending_pos %}
+            <tr>
+                <td>{{ po.id }}</td>
+                <td>{{ po.supplier.name }}</td>
+                <td>{{ po.created_by.username }}</td>
+                <td><span class="badge bg-warning text-dark">{{ po.status }}</span></td>
+                <td>
+                    <form action="{% url 'approve_po' po.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                    <form action="{% url 'reject_po' po.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">No pending purchase orders.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

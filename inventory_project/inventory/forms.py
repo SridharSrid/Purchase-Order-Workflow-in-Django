@@ -1,12 +1,8 @@
 from django import forms
-from .models import Supplier
+from .models import Supplier, Product
 
-class SupplierForm(forms.ModelForm):
-    class Meta:
-        model = Supplier
-        fields = ['name', 'contact_email', 'phone_number']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'contact_email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+class PurchaseOrderForm(forms.Form):
+    supplier = forms.ModelChoiceField(queryset=Supplier.objects.all())
+    product = forms.ModelChoiceField(queryset=Product.objects.all())
+    ordered_quantity = forms.IntegerField(min_value=1)
+    price_per_unit = forms.DecimalField(decimal_places=2, max_digits=10)

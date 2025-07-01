@@ -1,0 +1,27 @@
+<h2>Dashboard</h2>
+
+{% if is_manager %}
+    <h3>Pending Purchase Orders</h3>
+    <ul>
+        {% for po in pending_pos %}
+            <li>
+                PO #{{ po.id }} - {{ po.supplier.name }} - {{ po.status }}
+                <a href="{% url 'approve_po' po.id %}">Approve</a> |
+                <a href="{% url 'reject_po' po.id %}">Reject</a>
+            </li>
+        {% empty %}
+            <li>No pending orders.</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h3>Your Submitted Orders</h3>
+    <ul>
+        {% for po in user_pos %}
+            <li>
+                PO #{{ po.id }} - {{ po.supplier.name }} - {{ po.status }}
+            </li>
+        {% empty %}
+            <li>You have not submitted any orders yet.</li>
+        {% endfor %}
+    </ul>
+{% endif %}

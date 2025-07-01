@@ -14,11 +14,14 @@ class Supplier(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     stock_quantity = models.IntegerField(default=0)
+    reorder_threshold = models.IntegerField(default=10)  # Optional field for managing stock levels
 
     def reorder_needed(self):
-        # return self.stock_quantity < self.reorder_threshold
+        return self.stock_quantity < self.reorder_threshold
+
+    def __str__(self):
         return self.name
 
 # 3. Purchase Order
@@ -34,9 +37,8 @@ class PurchaseOrder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        # return f"PO #{self.id}"
         return f"PO #{self.id} - {self.supplier.name}"
-    
+
 # 4. Purchase Order Items
 class PurchaseOrderItem(models.Model):
     purchase_order = models.ForeignKey(PurchaseOrder, related_name='items', on_delete=models.CASCADE)
@@ -45,9 +47,8 @@ class PurchaseOrderItem(models.Model):
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        # return f"{self.product.name} in PO #{self.purchase_order.id}"
-         return f"{self.product.name} x {self.quantity}"
-    
+        return f"{self.product.name} x {self.ordered_quantity}"
+
 # 5. Inventory Transactions
 class InventoryTransaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
