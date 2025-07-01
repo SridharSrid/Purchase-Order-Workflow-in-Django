@@ -16,7 +16,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     stock_quantity = models.IntegerField(default=0)
-    reorder_threshold = models.IntegerField(default=10)  # Optional field for managing stock levels
+    reorder_threshold = models.IntegerField(default=10)  
 
     def reorder_needed(self):
         return self.stock_quantity < self.reorder_threshold
