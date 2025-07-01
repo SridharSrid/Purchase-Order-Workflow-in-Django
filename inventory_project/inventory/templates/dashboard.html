@@ -1,0 +1,63 @@
+<!-- <h2>Dashboard</h2>
+
+{% if is_manager %}
+    <h3>Pending Purchase Orders</h3>
+    <ul>
+        {% for po in pending_pos %}
+            <li>
+                PO #{{ po.id }} - {{ po.supplier.name }} - {{ po.status }}
+                <a href="{% url 'approve_po' po.id %}">Approve</a> |
+                <a href="{% url 'reject_po' po.id %}">Reject</a>
+            </li>
+        {% empty %}
+            <li>No pending orders.</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h3>Your Submitted Orders</h3>
+    <ul>
+        {% for po in user_pos %}
+            <li>
+                PO #{{ po.id }} - {{ po.supplier.name }} - {{ po.status }}
+            </li>
+        {% empty %}
+            <li>You have not submitted any orders yet.</li>
+        {% endfor %}
+    </ul>
+{% endif %} -->
+<!-- Dashboard Template -->
+
+<h2 class="mt-4 mb-3">Dashboard</h2>
+
+<!-- Section for Manager: Show Pending Purchase Orders -->
+{% if is_manager %}
+    <h3 class="mb-3">Pending Purchase Orders</h3>
+    <ul class="list-group mb-4">
+        {% for po in pending_pos %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>PO #{{ po.id }}</strong> - {{ po.supplier.name }} - <em>{{ po.status }}</em>
+                </span>
+                <span>
+                    <a href="{% url 'approve_po' po.id %}" class="btn btn-success btn-sm me-2">Approve</a>
+                    <a href="{% url 'reject_po' po.id %}" class="btn btn-danger btn-sm">Reject</a>
+                </span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No pending orders.</li>
+        {% endfor %}
+    </ul>
+
+<!-- Section for Regular User: Show Submitted Orders -->
+{% else %}
+    <h3 class="mb-3">Your Submitted Orders</h3>
+    <ul class="list-group mb-4">
+        {% for po in user_pos %}
+            <li class="list-group-item">
+                <strong>PO #{{ po.id }}</strong> - {{ po.supplier.name }} - <em>{{ po.status }}</em>
+            </li>
+        {% empty %}
+            <li class="list-group-item">You have not submitted any orders yet.</li>
+        {% endfor %}
+    </ul>
+{% endif %}
