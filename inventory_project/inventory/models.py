@@ -21,6 +21,13 @@ class Product(models.Model):
     def reorder_needed(self):
         return self.stock_quantity < self.reorder_threshold
 
+    def check_reorder_status(self):
+        if self.stock < self.reorder_threshold:
+            self.reorder_needed = True
+        else:
+            self.reorder_needed = False
+        self.save()
+        
     def __str__(self):
         return self.name
 

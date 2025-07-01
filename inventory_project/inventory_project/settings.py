@@ -103,8 +103,8 @@ DATABASES = {
 
 # LOGIN_REDIRECT_URL = '/'
 # LOGIN_REDIRECT_URL = '/manager-dashboard/' 
-LOGIN_URL = '/login/'
-LOGIN_URL = '/login.html'
+# LOGIN_URL = '/login/'
+# LOGIN_URL = '/login.html'
 
 
 # Password validation

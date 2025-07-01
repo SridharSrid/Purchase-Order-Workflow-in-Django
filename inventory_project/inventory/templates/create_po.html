@@ -9,6 +9,9 @@
 <div class="container mt-5">
     <div class="card shadow p-4">
         <h2 class="mb-4">Create Purchase Order</h2>
+        <a href="{% url 'purchase_order_list' %}" class="btn btn-primary mb-3">
+            View Purchase Orders
+        </a>
         <form method="post">
             {% csrf_token %}
             <div class="mb-3">

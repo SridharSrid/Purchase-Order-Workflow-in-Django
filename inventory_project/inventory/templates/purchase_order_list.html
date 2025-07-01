@@ -9,8 +9,28 @@
 <body class="bg-light py-4">
 
 <div class="container">
-    <h1 class="mb-4 text-center">Purchase Orders</h1>
+    <li class="nav-item">
+  <a class="nav-link" href="{% url 'product_inventory' %}">Inventory</a>
+</li>
+        <h1 class="mb-4 text-center">Purchase Orders</h1>
+    {% if user.groups.all.0.name == "Manager" %}
+    <a href="{% url 'manager_dashboard' %}" class="btn btn-primary mt-3">Dashboard</a>
+        {% elif user.groups.all.0.name == "Employee" %}
+    <a href="{% url 'purchase_order_create' %}" class="btn btn-success mt-3">Create PO</a>
+        {% endif %}
+<form method="get" action="">
+  <label for="status">Filter by Status:</label>
+  <select name="status" id="status" onchange="this.form.submit()">
+    <option value="">--All--</option>
+    <option value="Pending">Pending</option>
+    <option value="Approved">Approved</option>
+    <option value="Partially Delivered">Partially Delivered</option>
+    <option value="Completed">Completed</option>
+  </select>
+</form>
+</div>
 
+<div class="container">
     <table class="table table-bordered table-hover bg-white shadow-sm">
         <thead class="table-primary">
             <tr>
@@ -54,5 +74,103 @@
     </table>
 </div>
 
+
+
+<div class="container">
+    <table class="table table-bordered table-hover mt-4">
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">PO ID</th>
+      <th scope="col">Status</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for po in purchase_orders %}
+      <tr>
+        <td>{{ po.id }}</td>
+        <td>
+          <span class="badge 
+            {% if po.status == 'Approved' %}
+              bg-success
+            {% elif po.status == 'Partially Delivered' %}
+              bg-warning text-dark
+            {% elif po.status == 'Pending' %}
+              bg-secondary
+            {% else %}
+              bg-danger
+            {% endif %}">
+            {{ po.status }}
+          </span>
+        </td>
+        <td>
+          {% if po.status == 'Approved' or po.status == 'Partially Delivered' %}
+            <form action="{% url 'receive_goods' po.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <!-- <button type="submit" class="btn btn-success btn-sm">
+                <i class="bi bi-box-arrow-down"></i> Receive Goods
+              </button> -->
+              <a href="{% url 'receive_goods_form' po.id %}" class="btn btn-success btn-sm">
+                <i class="bi bi-box-arrow-down"></i> Receive Goods
+            </a>
+            </form>
+          {% else %}
+            <span class="text-muted">No action</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+
+
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Purchase Orders</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for po in purchase_orders %}
+            <tr>
+              <td>{{ po.id }}</td>
+              <td>
+                <span class="badge {% if po.status == 'Pending' %}bg-warning text-dark{% elif po.status == 'Approved' %}bg-success{% else %}bg-secondary{% endif %}">
+                  {{ po.status }}
+                </span>
+              </td>
+              <td>
+                {% if po.status == "Pending" and user.groups.first.name in "Procurement Officer,Manager" %}
+                  <form method="POST" action="{% url 'delete_purchase_order_ui' po.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this purchase order?')">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="text-muted">N/A</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3" class="text-center text-muted">No purchase orders found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 </body>
 </html>
